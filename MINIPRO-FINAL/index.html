@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartStore - Inventory Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Login Page -->
+<div id="loginPage" class="login-container">
+<h1>SmartStore</h1>
+<p>Advanced Inventory Management System</p>
+
+<div class="role-selector">
+<div class="role-card" onclick="showLoginForm('admin')">
+<i class="fas fa-user-shield"></i>
+<h3>Admin</h3>
+<p>Full system control</p>
+</div>
+<div class="role-card" onclick="showLoginForm('staff')">
+<i class="fas fa-users"></i>
+<h3>Staff</h3>
+<p>Manage inventory</p>
+</div>
+<div class="role-card" onclick="showLoginForm('customer')">
+<i class="fas fa-shopping-cart"></i>
+<h3>Customer</h3>
+<p>Shop and rate</p>
+</div>
+</div>
+
+<!-- Admin Login Form -->
+<div id="adminLoginForm" class="login-form">
+<h2>Admin Login</h2>
+<div class="form-group">
+<label for="adminUsername">Username</label>
+<input type="text" id="adminUsername" placeholder="Enter username">
+</div>
+<div class="form-group">
+<label for="adminPassword">Password</label>
+<input type="password" id="adminPassword" placeholder="Enter password">
+</div>
+<button class="btn btn-block" onclick="login('admin')">Login</button>
+<button class="btn btn-secondary btn-block" onclick="backToRoleSelection()">Back</button>
+</div>
+
+<!-- Staff Login Form -->
+<div id="staffLoginForm" class="login-form">
+<h2>Staff Login</h2>
+<div class="form-group">
+<label for="staffUsername">Username</label>
+<input type="text" id="staffUsername" placeholder="Enter username">
+</div>
+<div class="form-group">
+<label for="staffPassword">Password</label>
+<input type="password" id="staffPassword" placeholder="Enter password">
+</div>
+<button class="btn btn-block" onclick="login('staff')">Login</button>
+<button class="btn btn-secondary btn-block" onclick="backToRoleSelection()">Back</button>
+</div>
+
+<!-- Customer Login Form -->
+<div id="customerLoginForm" class="login-form">
+<h2>Customer Login</h2>
+<div class="form-group">
+<label for="customerUsername">Username</label>
+<input type="text" id="customerUsername" placeholder="Enter username">
+</div>
+<div class="form-group">
+<label for="customerPassword">Password</label>
+<input type="password" id="customerPassword" placeholder="Enter password">
+</div>
+<button class="btn btn-block" onclick="login('customer')">Login</button>
+<a href="#" class="register-link" onclick="showCustomerRegister()">Don't have an account? Register</a>
+<button class="btn btn-secondary btn-block" onclick="backToRoleSelection()">Back</button>
+</div>
+
+<!-- Customer Register Form -->
+<div id="customerRegisterForm" class="login-form">
+<h2>Customer Registration</h2>
+<div class="form-group">
+<label for="regCustomerName">Full Name</label>
+<input type="text" id="regCustomerName" placeholder="Enter full name">
+</div>
+<div class="form-group">
+<label for="regCustomerUsername">Username</label>
+<input type="text" id="regCustomerUsername" placeholder="Choose username">
+</div>
+<div class="form-group">
+<label for="regCustomerEmail">Email</label>
+<input type="email" id="regCustomerEmail" placeholder="Enter email">
+</div>
+<div class="form-group">
+<label for="regCustomerPassword">Password</label>
+<input type="password" id="regCustomerPassword" placeholder="Create password">
+</div>
+<button class="btn btn-block" onclick="registerCustomer()">Register</button>
+<button class="btn btn-secondary btn-block" onclick="backToCustomerLogin()">Back to Login</button>
+</div>
+</div>
+
+<!-- Admin Dashboard -->
+<div id="adminDashboard" class="dashboard">
+<div class="dashboard-header">
+<div class="container">
+<div class="header-content">
+<div class="logo">
+<i class="fas fa-store"></i>
+<span>SmartStore</span>
+</div>
+<div class="user-info">
+<span>Welcome, Admin</span>
+<div class="user-avatar">A</div>
+<button class="btn" onclick="logout()">Logout</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="sidebar">
+<ul class="sidebar-menu">
+<li><a href="#" class="active" onclick="showAdminSection('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+<li><a href="#" onclick="showAdminSection('sales')"><i class="fas fa-chart-line"></i> Sales Reports</a></li>
+<li><a href="#" onclick="showAdminSection('stock')"><i class="fas fa-boxes"></i> Stock Reports</a></li>
+<li><a href="#" onclick="showAdminSection('feedback')"><i class="fas fa-comments"></i> Customer Feedbacks</a></li>
+<li><a href="#" onclick="showAdminSection('staff')"><i class="fas fa-user-tie"></i> Staff Reports</a></li>
+<li><a href="#" onclick="showAdminSection('tasks')"><i class="fas fa-tasks"></i> Task Management</a></li>
+<li><a href="#" onclick="showAdminSection('topItems')"><i class="fas fa-star"></i> Top Sold Items</a></li>
+<li><a href="#" onclick="showAdminSection('addItems')"><i class="fas fa-plus-circle"></i> Add Items</a></li>
+<li><a href="#" onclick="showAdminSection('stockManagement')"><i class="fas fa-warehouse"></i> Stock Management</a></li>
+<li><a href="#" onclick="showAdminSection('scheduledOrders')"><i class="fas fa-calendar-alt"></i> Scheduled Orders</a></li>
+<li><a href="#" onclick="showAdminSection('settings')"><i class="fas fa-cog"></i> Settings</a></li>
+<li><a href="#" onclick="openModal('offlineOrderModal')"><i class="fas fa-receipt"></i> Create Offline Order</a></li>
+</ul>
+</div>
+
+<div class="main-content">
+<h1 class="dashboard-title">Admin Dashboard</h1>
+
+<!-- Dashboard Overview -->
+<div id="adminDashboardSection" class="tab-content active">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Total Sales</div>
+<div class="stat-card-icon" style="background: var(--primary);">
+<i class="fas fa-rupee-sign"></i>
+</div>
+</div>
+<div class="stat-card-value" id="totalSalesValue">₹24,568</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 12.5% from last month
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Total Products</div>
+<div class="stat-card-icon" style="background: var(--secondary);">
+<i class="fas fa-box"></i>
+</div>
+</div>
+<div class="stat-card-value" id="totalProductsCount">1,248</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 8.2% from last month
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Customers</div>
+<div class="stat-card-icon" style="background: var(--accent);">
+<i class="fas fa-users"></i>
+</div>
+</div>
+<div class="stat-card-value">4,825</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 5.7% from last month
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Scheduled Orders</div>
+<div class="stat-card-icon" style="background: #8b5cf6;">
+<i class="fas fa-calendar-alt"></i>
+</div>
+</div>
+<div class="stat-card-value" id="scheduledOrdersCount">12</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 3 from yesterday
+</div>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Sales Overview</h2>
+</div>
+<div class="chart-container">
+<canvas id="adminSalesChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Stock Distribution</h2>
+</div>
+<div class="chart-container">
+<canvas id="adminStockChart"></canvas>
+</div>
+</div>
+</div>
+
+<!-- Task Management Section -->
+<div id="adminTasksSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Task Management</h2>
+<button class="btn" onclick="openModal('assignTaskModal')">Assign New Task</button>
+</div>
+<div class="task-list" id="taskList">
+<!-- Tasks will be dynamically loaded here -->
+</div>
+</div>
+</div>
+
+<!-- Stock Management Section -->
+<div id="adminStockManagementSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Stock Management</h2>
+<button class="btn" onclick="openModal('addStockItemModal')">Add New Item</button>
+</div>
+<div class="stock-management" id="stockManagementGrid">
+<!-- Stock items will be dynamically loaded here -->
+</div>
+</div>
+</div>
+
+<!-- Scheduled Orders Section -->
+<div id="adminScheduledOrdersSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Scheduled Orders</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Customer</th>
+<th>Items</th>
+<th>Total</th>
+<th>Scheduled Date</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="scheduledOrdersTable">
+<!-- Scheduled orders will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Add Items Section -->
+<div id="adminAddItemsSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Add New Item</h2>
+</div>
+<form id="addItemForm" class="add-item-form">
+<div class="form-group">
+<label for="itemName">Item Name</label>
+<input type="text" id="itemName" placeholder="Enter item name" required>
+</div>
+<div class="form-group">
+<label for="itemCategory">Category</label>
+<select id="itemCategory" required>
+<option value="">Select category</option>
+<option value="Electronics">Electronics</option>
+<option value="Clothing">Clothing</option>
+<option value="Footwear">Footwear</option>
+<option value="Home & Kitchen">Home & Kitchen</option>
+<option value="Sports">Sports</option>
+<option value="Books">Books</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div class="form-group">
+<label for="itemPrice">Price (₹)</label>
+<input type="number" id="itemPrice" placeholder="0.00" step="0.01" min="0" required>
+</div>
+<div class="form-group">
+<label for="itemStock">Stock Quantity</label>
+<input type="number" id="itemStock" placeholder="0" min="0" required>
+</div>
+<div class="form-group form-full-width">
+<label for="itemDescription">Description</label>
+<textarea id="itemDescription" rows="3" placeholder="Enter item description"></textarea>
+</div>
+<div class="form-group form-full-width">
+<label>Select Icon</label>
+<div class="icon-selector" id="iconSelector">
+<div class="icon-option" data-icon="fa-laptop"><i class="fas fa-laptop"></i></div>
+<div class="icon-option" data-icon="fa-mobile-alt"><i class="fas fa-mobile-alt"></i></div>
+<div class="icon-option" data-icon="fa-headphones"><i class="fas fa-headphones"></i></div>
+<div class="icon-option" data-icon="fa-tshirt"><i class="fas fa-tshirt"></i></div>
+<div class="icon-option" data-icon="fa-shoe-prints"><i class="fas fa-shoe-prints"></i></div>
+<div class="icon-option" data-icon="fa-clock"><i class="fas fa-clock"></i></div>
+<div class="icon-option" data-icon="fa-camera"><i class="fas fa-camera"></i></div>
+<div class="icon-option" data-icon="fa-gamepad"><i class="fas fa-gamepad"></i></div>
+<div class="icon-option" data-icon="fa-book"><i class="fas fa-book"></i></div>
+<div class="icon-option" data-icon="fa-home"><i class="fas fa-home"></i></div>
+<div class="icon-option" data-icon="fa-utensils"><i class="fas fa-utensils"></i></div>
+<div class="icon-option" data-icon="fa-dumbbell"><i class="fas fa-dumbbell"></i></div>
+<div class="icon-option" data-icon="fa-gift"><i class="fas fa-gift"></i></div>
+<div class="icon-option" data-icon="fa-box"><i class="fas fa-box"></i></div>
+<div class="icon-option" data-icon="fa-heart"><i class="fas fa-heart"></i></div>
+<div class="icon-option" data-icon="fa-star"><i class="fas fa-star"></i></div>
+</div>
+</div>
+<div class="form-actions form-full-width">
+<button type="submit" class="btn">Add Item</button>
+<button type="button" class="btn btn-secondary" onclick="resetAddItemForm()">Reset</button>
+</div>
+</form>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Recently Added Items</h2>
+</div>
+<div class="product-grid" id="recentlyAddedGrid">
+<!-- Recently added items will appear here -->
+</div>
+</div>
+</div>
+
+<!-- Top Sold Items Section -->
+<div id="adminTopItemsSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Top Sold Items</h2>
+</div>
+<div class="chart-container">
+<canvas id="adminTopItemsChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Best Sellers</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Product</th>
+<th>Category</th>
+<th>Sold</th>
+<th>Revenue</th>
+<th>Rating</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Laptop Pro</td>
+<td>Electronics</td>
+<td>124</td>
+<td>₹186,000</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+</div>
+</td>
+</tr>
+<tr>
+<td>Wireless Headphones</td>
+<td>Electronics</td>
+<td>89</td>
+<td>₹8,900</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+</td>
+</tr>
+<tr>
+<td>Cotton T-Shirt</td>
+<td>Clothing</td>
+<td>210</td>
+<td>₹4,200</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+</div>
+</td>
+</tr>
+<tr>
+<td>Running Shoes</td>
+<td>Footwear</td>
+<td>76</td>
+<td>₹7,600</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+</td>
+</tr>
+<tr>
+<td>Smart Watch</td>
+<td>Electronics</td>
+<td>64</td>
+<td>₹12,800</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Sales Reports -->
+<div id="adminSalesSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Sales Reports</h2>
+</div>
+<div class="chart-container">
+<canvas id="adminSalesReportChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Recent Sales</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Customer</th>
+<th>Date</th>
+<th>Amount</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="recentSalesTable">
+<!-- Recent sales will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Stock Reports -->
+<div id="adminStockSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Stock Reports</h2>
+</div>
+<div class="chart-container">
+<canvas id="adminStockReportChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Inventory Status</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Product</th>
+<th>Category</th>
+<th>Stock</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="inventoryStatusTable">
+<!-- Dynamic content will be loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Customer Feedbacks -->
+<div id="adminFeedbackSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Customer Feedbacks</h2>
+</div>
+<div class="chart-container">
+<canvas id="adminFeedbackChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Recent Feedbacks</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Customer</th>
+<th>Product</th>
+<th>Rating</th>
+<th>Comment</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>John Doe</td>
+<td>Laptop Pro</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+</div>
+</td>
+<td>Excellent product, highly recommended!</td>
+<td>2023-05-15</td>
+</tr>
+<tr>
+<td>Jane Smith</td>
+<td>Wireless Headphones</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+</td>
+<td>Good sound quality, but battery life could be better.</td>
+<td>2023-05-14</td>
+</tr>
+<tr>
+<td>Robert Johnson</td>
+<td>Smartphone X</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+</td>
+<td>Average phone, camera quality is not as expected.</td>
+<td>2023-05-14</td>
+</tr>
+<tr>
+<td>Emily Davis</td>
+<td>Cotton T-Shirt</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+</div>
+</td>
+<td>Very comfortable and good quality fabric.</td>
+<td>2023-05-13</td>
+</tr>
+<tr>
+<td>Michael Wilson</td>
+<td>Running Shoes</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+</td>
+<td>Comfortable for running, but not very durable.</td>
+<td>2023-05-13</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Staff Reports -->
+<div id="adminStaffSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Staff Performance</h2>
+</div>
+<div class="chart-container">
+<canvas id="adminStaffChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Staff Details</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Position</th>
+<th>Sales</th>
+<th>Rating</th>
+<th>Attendance</th>
+</tr>
+</thead>
+<tbody id="staffTableBody">
+<!-- Staff data will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Settings -->
+<div id="adminSettingsSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">System Settings</h2>
+</div>
+
+<div class="tabs">
+<div class="tab active" onclick="showSettingsTab('general')">General</div>
+<div class="tab" onclick="showSettingsTab('users')">Users</div>
+</div>
+
+<div id="generalSettingsTab" class="tab-content active">
+<div class="form-group">
+<label for="storeName">Store Name</label>
+<input type="text" id="storeName" value="SmartStore">
+</div>
+<div class="form-group">
+<label for="storeEmail">Store Email</label>
+<input type="email" id="storeEmail" value="info@smartstore.com">
+</div>
+<div class="form-group">
+<label for="storePhone">Store Phone</label>
+<input type="text" id="storePhone" value="+1 (555) 123-4567">
+</div>
+<div class="form-group">
+<label for="storeAddress">Store Address</label>
+<input type="text" id="storeAddress" value="123 Main St, City, Country">
+</div>
+<button class="btn" onclick="saveSettings()">Save Changes</button>
+</div>
+
+<div id="usersSettingsTab" class="tab-content">
+<div class="section-header">
+<h3 class="section-title">Manage Users</h3>
+<button class="btn" onclick="openModal('registerStaffModal')">Register New Staff</button>
+</div>
+
+<table class="data-table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Username</th>
+<th>Role</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="staffTableBodySettings">
+<!-- Staff will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Staff Dashboard -->
+<div id="staffDashboard" class="dashboard">
+<div class="dashboard-header">
+<div class="container">
+<div class="header-content">
+<div class="logo">
+<i class="fas fa-store"></i>
+<span>SmartStore</span>
+</div>
+<div class="user-info">
+<span>Welcome, Staff</span>
+<div class="user-avatar">S</div>
+<button class="btn" onclick="logout()">Logout</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="sidebar">
+<ul class="sidebar-menu">
+<li><a href="#" class="active" onclick="showStaffSection('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+<li><a href="#" onclick="showStaffSection('tasks')"><i class="fas fa-tasks"></i> My Tasks</a></li>
+<li><a href="#" onclick="showStaffSection('reviews')"><i class="fas fa-star"></i> Customer Reviews</a></li>
+<li><a href="#" onclick="showStaffSection('attendance')"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+<li><a href="#" onclick="showStaffSection('stock')"><i class="fas fa-boxes"></i> Stock Reports</a></li>
+<li><a href="#" onclick="showStaffSection('stockManagement')"><i class="fas fa-warehouse"></i> Stock Management</a></li>
+<li><a href="#" onclick="showStaffSection('scheduledOrders')"><i class="fas fa-calendar-alt"></i> Scheduled Orders</a></li>
+<li><a href="#" onclick="openModal('offlineOrderModal')"><i class="fas fa-receipt"></i> Create Offline Order</a></li>
+</ul>
+</div>
+
+<div class="main-content">
+<h1 class="dashboard-title">Staff Dashboard</h1>
+
+<!-- Dashboard Overview -->
+<div id="staffDashboardSection" class="tab-content active">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Tasks Completed</div>
+<div class="stat-card-icon" style="background: var(--primary);">
+<i class="fas fa-check-circle"></i>
+</div>
+</div>
+<div class="stat-card-value">24</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 8 from yesterday
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Pending Tasks</div>
+<div class="stat-card-icon" style="background: var(--accent);">
+<i class="fas fa-clock"></i>
+</div>
+</div>
+<div class="stat-card-value" id="pendingTasksCount">7</div>
+<div class="stat-card-change negative">
+<i class="fas fa-arrow-up"></i> 3 from yesterday
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Customer Rating</div>
+<div class="stat-card-icon" style="background: var(--secondary);">
+<i class="fas fa-star"></i>
+</div>
+</div>
+<div class="stat-card-value">4.6</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 0.2 from last week
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Scheduled Orders</div>
+<div class="stat-card-icon" style="background: #8b5cf6;">
+<i class="fas fa-calendar-alt"></i>
+</div>
+</div>
+<div class="stat-card-value" id="staffScheduledOrdersCount">12</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 3 from yesterday
+</div>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Task Progress</h2>
+</div>
+<div class="chart-container">
+<canvas id="staffTaskChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Customer Satisfaction</h2>
+</div>
+<div class="chart-container">
+<canvas id="staffRatingChart"></canvas>
+</div>
+</div>
+</div>
+
+<!-- My Tasks Section -->
+<div id="staffTasksSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">My Assigned Tasks</h2>
+</div>
+<div class="task-list" id="staffTaskList">
+<!-- Tasks will be dynamically loaded here -->
+</div>
+</div>
+</div>
+
+<!-- Stock Management Section -->
+<div id="staffStockManagementSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Stock Management</h2>
+<button class="btn" onclick="openModal('addStockItemModal')">Add New Item</button>
+</div>
+<div class="stock-management" id="staffStockManagementGrid">
+<!-- Stock items will be dynamically loaded here -->
+</div>
+</div>
+</div>
+
+<!-- Scheduled Orders Section -->
+<div id="staffScheduledOrdersSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Scheduled Orders</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Customer</th>
+<th>Items</th>
+<th>Total</th>
+<th>Scheduled Date</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="staffScheduledOrdersTable">
+<!-- Scheduled orders will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Customer Reviews -->
+<div id="staffReviewsSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Your Customer Reviews</h2>
+</div>
+<div class="chart-container">
+<canvas id="staffReviewsChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Recent Reviews</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Customer</th>
+<th>Rating</th>
+<th>Comment</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>John Doe</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+</div>
+</td>
+<td>Excellent service, very helpful staff!</td>
+<td>2023-05-15</td>
+</tr>
+<tr>
+<td>Jane Smith</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+</td>
+<td>Good service, but could be faster.</td>
+<td>2023-05-14</td>
+</tr>
+<tr>
+<td>Robert Johnson</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+</div>
+</td>
+<td>Very knowledgeable staff, helped me find exactly what I needed.</td>
+<td>2023-05-13</td>
+</tr>
+<tr>
+<td>Emily Davis</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+</td>
+<td>Average experience, staff was polite but not very helpful.</td>
+<td>2023-05-12</td>
+</tr>
+<tr>
+<td>Michael Wilson</td>
+<td>
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+</div>
+</td>
+<td>Outstanding service! Will definitely come back.</td>
+<td>2023-05-11</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Attendance -->
+<div id="staffAttendanceSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Attendance Overview</h2>
+</div>
+<div class="chart-container">
+<canvas id="staffAttendanceChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Attendance Details</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Date</th>
+<th>Clock In</th>
+<th>Clock Out</th>
+<th>Hours Worked</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2023-05-15</td>
+<td>09:00 AM</td>
+<td>05:30 PM</td>
+<td>8.5</td>
+<td><span class="badge badge-success">Present</span></td>
+</tr>
+<tr>
+<td>2023-05-14</td>
+<td>09:15 AM</td>
+<td>05:45 PM</td>
+<td>8.5</td>
+<td><span class="badge badge-success">Present</span></td>
+</tr>
+<tr>
+<td>2023-05-13</td>
+<td>08:45 AM</td>
+<td>05:15 PM</td>
+<td>8.5</td>
+<td><span class="badge badge-success">Present</span></td>
+</tr>
+<tr>
+<td>2023-05-12</td>
+<td>-</td>
+<td>-</td>
+<td>0</td>
+<td><span class="badge badge-danger">Absent</span></td>
+</tr>
+<tr>
+<td>2023-05-11</td>
+<td>09:00 AM</td>
+<td>05:00 PM</td>
+<td>8</td>
+<td><span class="badge badge-success">Present</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Stock Reports -->
+<div id="staffStockSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Stock Overview</h2>
+</div>
+<div class="chart-container">
+<canvas id="staffStockChart"></canvas>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Inventory Status</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Product</th>
+<th>Category</th>
+<th>Stock</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="staffInventoryTable">
+<!-- Dynamic content will be loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Customer Dashboard -->
+<div id="customerDashboard" class="dashboard">
+<div class="dashboard-header">
+<div class="container">
+<div class="header-content">
+<div class="logo">
+<i class="fas fa-store"></i>
+<span>SmartStore</span>
+</div>
+<div class="user-info">
+<span id="customerWelcome">Welcome, Customer</span>
+<div class="user-avatar" id="customerAvatar">C</div>
+<button class="btn" onclick="logout()">Logout</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="sidebar">
+<ul class="sidebar-menu">
+<li><a href="#" class="active" onclick="showCustomerSection('dashboard')"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+<li><a href="#" onclick="showCustomerSection('staff')"><i class="fas fa-users"></i> Staff Members</a></li>
+<li><a href="#" onclick="showCustomerSection('products')"><i class="fas fa-shopping-bag"></i> Available Items</a></li>
+<li><a href="#" onclick="showCustomerSection('cart')"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+<li><a href="#" onclick="showCustomerSection('orders')"><i class="fas fa-receipt"></i> My Orders</a></li>
+<li><a href="#" onclick="showCustomerSection('scheduledOrders')"><i class="fas fa-calendar-alt"></i> Scheduled Orders</a></li>
+<li><a href="#" onclick="showCustomerSection('support')"><i class="fas fa-headset"></i> Customer Support</a></li>
+</ul>
+</div>
+
+<div class="main-content">
+<h1 class="dashboard-title">Customer Dashboard</h1>
+
+<!-- Dashboard Overview -->
+<div id="customerDashboardSection" class="tab-content active">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Total Orders</div>
+<div class="stat-card-icon" style="background: var(--primary);">
+<i class="fas fa-shopping-bag"></i>
+</div>
+</div>
+<div class="stat-card-value" id="customerTotalOrders">0</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 3 from last month
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Wishlist Items</div>
+<div class="stat-card-icon" style="background: var(--accent);">
+<i class="fas fa-heart"></i>
+</div>
+</div>
+<div class="stat-card-value">8</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 2 from last week
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Loyalty Points</div>
+<div class="stat-card-icon" style="background: var(--secondary);">
+<i class="fas fa-coins"></i>
+</div>
+</div>
+<div class="stat-card-value">450</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 50 from last order
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-card-header">
+<div class="stat-card-title">Scheduled Orders</div>
+<div class="stat-card-icon" style="background: #8b5cf6;">
+<i class="fas fa-calendar-alt"></i>
+</div>
+</div>
+<div class="stat-card-value" id="customerScheduledOrdersCount">0</div>
+<div class="stat-card-change positive">
+<i class="fas fa-arrow-up"></i> 1 from last week
+</div>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Recent Orders</h2>
+<button class="btn" onclick="showCustomerSection('orders')">View All</button>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Date</th>
+<th>Items</th>
+<th>Total</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="customerRecentOrders">
+<!-- Recent orders will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Recommended For You</h2>
+</div>
+<div class="product-grid" id="recommendedProductsGrid">
+<!-- Dynamic content will be loaded here -->
+</div>
+</div>
+</div>
+
+<!-- Scheduled Orders Section -->
+<div id="customerScheduledOrdersSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Scheduled Orders</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Items</th>
+<th>Total</th>
+<th>Scheduled Date</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="customerScheduledOrdersTable">
+<!-- Scheduled orders will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Staff Members -->
+<div id="customerStaffSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Our Staff Members</h2>
+</div>
+<div class="staff-grid">
+<div class="staff-card">
+<div class="staff-header">
+<div class="staff-avatar">AJ</div>
+<div class="staff-info">
+<h3>Alex Johnson</h3>
+<p>Store Manager</p>
+</div>
+</div>
+<div class="staff-rating">
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+</div>
+<span>4.8 (24 reviews)</span>
+</div>
+<p>Experienced manager with 10+ years in retail. Specializes in customer service and team leadership.</p>
+<button class="btn btn-small btn-block" onclick="openModal('rateStaffModal', 'Alex Johnson', 1)">Rate Staff</button>
+</div>
+<div class="staff-card">
+<div class="staff-header">
+<div class="staff-avatar">SW</div>
+<div class="staff-info">
+<h3>Sarah Williams</h3>
+<p>Sales Associate</p>
+</div>
+</div>
+<div class="staff-rating">
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+<span>4.2 (18 reviews)</span>
+</div>
+<p>Friendly and knowledgeable staff member with expertise in electronics and home appliances.</p>
+<button class="btn btn-small btn-block" onclick="openModal('rateStaffModal', 'Sarah Williams', 2)">Rate Staff</button>
+</div>
+<div class="staff-card">
+<div class="staff-header">
+<div class="staff-avatar">MB</div>
+<div class="staff-info">
+<h3>Michael Brown</h3>
+<p>Inventory Clerk</p>
+</div>
+</div>
+<div class="staff-rating">
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+<span>3.6 (12 reviews)</span>
+</div>
+<p>Detail-oriented inventory specialist ensuring stock accuracy and timely restocking.</p>
+<button class="btn btn-small btn-block" onclick="openModal('rateStaffModal', 'Michael Brown', 3)">Rate Staff</button>
+</div>
+<div class="staff-card">
+<div class="staff-header">
+<div class="staff-avatar">ED</div>
+<div class="staff-info">
+<h3>Emily Davis</h3>
+<p>Cashier</p>
+</div>
+</div>
+<div class="staff-rating">
+<div class="stars">
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="fas fa-star"></i>
+<i class="far fa-star"></i>
+</div>
+<span>4.1 (15 reviews)</span>
+</div>
+<p>Efficient cashier with excellent customer service skills and fast checkout processing.</p>
+<button class="btn btn-small btn-block" onclick="openModal('rateStaffModal', 'Emily Davis', 4)">Rate Staff</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Available Items -->
+<div id="customerProductsSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Available Products</h2>
+<div class="form-group" style="width: 300px; margin-bottom: 0;">
+<input type="text" placeholder="Search products..." style="padding: 0.5rem;">
+</div>
+</div>
+<div class="product-grid" id="allProductsGrid">
+<!-- Dynamic content will be loaded here -->
+</div>
+</div>
+</div>
+
+<!-- Cart -->
+<div id="customerCartSection" class="tab-content">
+<div class="cart-container">
+<div class="section-header">
+<h2 class="section-title">Shopping Cart</h2>
+</div>
+<div id="cartItems">
+<!-- Cart items will be dynamically loaded here -->
+</div>
+<div class="cart-total">
+<span>Total:</span>
+<span id="cartTotal">₹0.00</span>
+</div>
+<div class="form-actions">
+<button class="btn" onclick="openCheckoutModal()">Checkout</button>
+<button class="btn btn-secondary" onclick="clearCart()">Clear Cart</button>
+</div>
+</div>
+
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Recommended For You</h2>
+</div>
+<div class="product-grid" id="cartRecommendedGrid">
+<!-- Dynamic content will be loaded here -->
+</div>
+</div>
+</div>
+
+<!-- My Orders -->
+<div id="customerOrdersSection" class="tab-content">
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">My Orders</h2>
+</div>
+<table class="data-table">
+<thead>
+<tr>
+<th>Order ID</th>
+<th>Date</th>
+<th>Items</th>
+<th>Total</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="customerOrdersTable">
+<!-- Orders will be dynamically loaded here -->
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Customer Support -->
+<div id="customerSupportSection" class="tab-content">
+<div class="support-container">
+<div class="section-header">
+<h2 class="section-title">Customer Support</h2>
+</div>
+<div class="support-info">
+<div class="support-item">
+<div class="support-icon">
+<i class="fas fa-store"></i>
+</div>
+<div class="support-details">
+<h3>Store Name</h3>
+<p id="supportStoreName">SmartStore</p>
+</div>
+</div>
+<div class="support-item">
+<div class="support-icon">
+<i class="fas fa-envelope"></i>
+</div>
+<div class="support-details">
+<h3>Email</h3>
+<p id="supportStoreEmail">info@smartstore.com</p>
+</div>
+</div>
+<div class="support-item">
+<div class="support-icon">
+<i class="fas fa-phone"></i>
+</div>
+<div class="support-details">
+<h3>Phone</h3>
+<p id="supportStorePhone">+1 (555) 123-4567</p>
+</div>
+</div>
+<div class="support-item">
+<div class="support-icon">
+<i class="fas fa-map-marker-alt"></i>
+</div>
+<div class="support-details">
+<h3>Address</h3>
+<p id="supportStoreAddress">123 Main St, City, Country</p>
+</div>
+</div>
+</div>
+<div class="content-section">
+<div class="section-header">
+<h2 class="section-title">Frequently Asked Questions</h2>
+</div>
+<div class="faq-list">
+<div class="faq-item">
+<h3>How do I track my order?</h3>
+<p>You can track your order by visiting the "My Orders" section in your dashboard. There you'll find the status of all your orders, including scheduled pickup dates and times.</p>
+</div>
+<div class="faq-item">
+<h3>What is your return policy?</h3>
+<p>We offer a 30-day return policy for all products in their original condition. Please visit our store with your receipt and the product you wish to return.</p>
+</div>
+<div class="faq-item">
+<h3>How do I schedule a pickup?</h3>
+<p>When you checkout, you can select a preferred pickup date and time. We'll prepare your order and have it ready for you at the scheduled time.</p>
+</div>
+<div class="faq-item">
+<h3>Do you offer loyalty programs?</h3>
+<p>Yes, we offer a loyalty program where you earn points with every purchase. These points can be redeemed for discounts on future purchases.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Modals -->
+<div id="registerStaffModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Register New Staff</h2>
+<button class="close-btn" onclick="closeModal('registerStaffModal')">&times;</button>
+</div>
+<form id="registerStaffForm" onsubmit="return registerStaff(event)">
+<div class="form-group">
+<label for="staffName">Full Name</label>
+<input type="text" id="staffName" placeholder="Enter full name">
+</div>
+<div class="form-group">
+<label for="staffUsername">Username *</label>
+<input type="text" id="staffUsernameReg" placeholder="Choose username" required>
+</div>
+<div class="form-group">
+<label for="staffPosition">Position</label>
+<input type="text" id="staffPosition" placeholder="Enter position">
+</div>
+<div class="form-group">
+<label for="staffPassword">Password *</label>
+<input type="password" id="staffPasswordReg" placeholder="Create password" required>
+</div>
+<div class="form-actions">
+<button type="submit" class="btn">Register Staff</button>
+<button type="button" class="btn btn-secondary" onclick="closeModal('registerStaffModal')">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+
+<div id="editStaffModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Edit Staff</h2>
+<button class="close-btn" onclick="closeModal('editStaffModal')">&times;</button>
+</div>
+<input type="hidden" id="editStaffId">
+<div class="form-group">
+<label for="editStaffName">Full Name</label>
+<input type="text" id="editStaffName" placeholder="Enter full name" required>
+</div>
+<div class="form-group">
+<label for="editStaffUsername">Username</label>
+<input type="text" id="editStaffUsername" placeholder="Enter username" required>
+</div>
+<div class="form-group">
+<label for="editStaffPosition">Position</label>
+<input type="text" id="editStaffPosition" placeholder="Enter position" required>
+</div>
+<div class="form-actions">
+<button class="btn" onclick="updateStaff()">Update Staff</button>
+<button class="btn btn-secondary" onclick="closeModal('editStaffModal')">Cancel</button>
+</div>
+</div>
+</div>
+
+<div id="assignTaskModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Assign New Task</h2>
+<button class="close-btn" onclick="closeModal('assignTaskModal')">&times;</button>
+</div>
+<div class="form-group">
+<label for="taskTitle">Task Title</label>
+<input type="text" id="taskTitle" placeholder="Enter task title" required>
+</div>
+<div class="form-group">
+<label for="taskDescription">Task Description</label>
+<textarea id="taskDescription" rows="3" placeholder="Enter task description" required></textarea>
+</div>
+<div class="form-group">
+<label for="taskAssignedTo">Assign To</label>
+<select id="taskAssignedTo" required>
+<option value="">Select staff member</option>
+</select>
+</div>
+<div class="form-group">
+<label for="taskPriority">Priority</label>
+<select id="taskPriority" required>
+<option value="Low">Low</option>
+<option value="Medium">Medium</option>
+<option value="High">High</option>
+</select>
+</div>
+<div class="form-group">
+<label for="taskDueDate">Due Date</label>
+<input type="date" id="taskDueDate" required>
+</div>
+<div class="form-actions">
+<button class="btn" onclick="assignTask()">Assign Task</button>
+<button class="btn btn-secondary" onclick="closeModal('assignTaskModal')">Cancel</button>
+</div>
+</div>
+</div>
+
+<div id="rateStaffModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Rate Staff Member</h2>
+<button class="close-btn" onclick="closeModal('rateStaffModal')">&times;</button>
+</div>
+<div class="form-group">
+<label>Staff Member: <span id="staffNameToRate"></span></label>
+</div>
+<div class="form-group">
+<label>Your Rating</label>
+<div class="rating-input" id="staffRatingInput">
+<i class="far fa-star" data-rating="1"></i>
+<i class="far fa-star" data-rating="2"></i>
+<i class="far fa-star" data-rating="3"></i>
+<i class="far fa-star" data-rating="4"></i>
+<i class="far fa-star" data-rating="5"></i>
+</div>
+</div>
+<div class="form-group">
+<label for="staffComment">Comment</label>
+<textarea id="staffComment" rows="4" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--gray-light);"></textarea>
+</div>
+<div class="form-actions">
+<button class="btn" onclick="submitStaffRating()">Submit Rating</button>
+<button class="btn btn-secondary" onclick="closeModal('rateStaffModal')">Cancel</button>
+</div>
+</div>
+</div>
+
+<div id="rateProductModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Rate Products</h2>
+<button class="close-btn" onclick="closeModal('rateProductModal')">&times;</button>
+</div>
+<div class="form-group">
+<label>Select Product</label>
+<select id="productToRate" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--gray-light);">
+<option>Laptop Pro</option>
+<option>Wireless Headphones</option>
+<option>Cotton T-Shirt</option>
+<option>Running Shoes</option>
+</select>
+</div>
+<div class="form-group">
+<label>Your Rating</label>
+<div class="rating-input" id="productRatingInput">
+<i class="far fa-star" data-rating="1"></i>
+<i class="far fa-star" data-rating="2"></i>
+<i class="far fa-star" data-rating="3"></i>
+<i class="far fa-star" data-rating="4"></i>
+<i class="far fa-star" data-rating="5"></i>
+</div>
+</div>
+<div class="form-group">
+<label for="productComment">Comment</label>
+<textarea id="productComment" rows="4" style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--gray-light);"></textarea>
+</div>
+<div class="form-actions">
+<button class="btn" onclick="submitProductRating()">Submit Rating</button>
+<button class="btn btn-secondary" onclick="closeModal('rateProductModal')">Cancel</button>
+</div>
+</div>
+</div>
+
+<div id="addStockItemModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Add New Stock Item</h2>
+<button class="close-btn" onclick="closeModal('addStockItemModal')">&times;</button>
+</div>
+<form id="addStockItemForm" class="add-item-form">
+<div class="form-group">
+<label for="stockItemName">Item Name</label>
+<input type="text" id="stockItemName" placeholder="Enter item name" required>
+</div>
+<div class="form-group">
+<label for="stockItemCategory">Category</label>
+<select id="stockItemCategory" required>
+<option value="">Select category</option>
+<option value="Electronics">Electronics</option>
+<option value="Clothing">Clothing</option>
+<option value="Footwear">Footwear</option>
+<option value="Home & Kitchen">Home & Kitchen</option>
+<option value="Sports">Sports</option>
+<option value="Books">Books</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div class="form-group">
+<label for="stockItemPrice">Price (₹)</label>
+<input type="number" id="stockItemPrice" placeholder="0.00" step="0.01" min="0" required>
+</div>
+<div class="form-group">
+<label for="stockItemQuantity">Quantity</label>
+<input type="number" id="stockItemQuantity" placeholder="0" min="0" required>
+</div>
+<div class="form-group form-full-width">
+<label for="stockItemDescription">Description</label>
+<textarea id="stockItemDescription" rows="3" placeholder="Enter item description"></textarea>
+</div>
+<div class="form-group form-full-width">
+<label>Select Icon</label>
+<div class="icon-selector" id="stockIconSelector">
+<div class="icon-option" data-icon="fa-laptop"><i class="fas fa-laptop"></i></div>
+<div class="icon-option" data-icon="fa-mobile-alt"><i class="fas fa-mobile-alt"></i></div>
+<div class="icon-option" data-icon="fa-headphones"><i class="fas fa-headphones"></i></div>
+<div class="icon-option" data-icon="fa-tshirt"><i class="fas fa-tshirt"></i></div>
+<div class="icon-option" data-icon="fa-shoe-prints"><i class="fas fa-shoe-prints"></i></div>
+<div class="icon-option" data-icon="fa-clock"><i class="fas fa-clock"></i></div>
+<div class="icon-option" data-icon="fa-camera"><i class="fas fa-camera"></i></div>
+<div class="icon-option" data-icon="fa-gamepad"><i class="fas fa-gamepad"></i></div>
+<div class="icon-option" data-icon="fa-book"><i class="fas fa-book"></i></div>
+<div class="icon-option" data-icon="fa-home"><i class="fas fa-home"></i></div>
+<div class="icon-option" data-icon="fa-utensils"><i class="fas fa-utensils"></i></div>
+<div class="icon-option" data-icon="fa-dumbbell"><i class="fas fa-dumbbell"></i></div>
+<div class="icon-option" data-icon="fa-gift"><i class="fas fa-gift"></i></div>
+<div class="icon-option" data-icon="fa-box"><i class="fas fa-box"></i></div>
+<div class="icon-option" data-icon="fa-heart"><i class="fas fa-heart"></i></div>
+<div class="icon-option" data-icon="fa-star"><i class="fas fa-star"></i></div>
+</div>
+</div>
+<div class="form-actions form-full-width">
+<button type="submit" class="btn">Add Item</button>
+<button type="button" class="btn btn-secondary" onclick="closeModal('addStockItemModal')">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+
+<div id="editStockItemModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Edit Stock Item</h2>
+<button class="close-btn" onclick="closeModal('editStockItemModal')">&times;</button>
+</div>
+<form id="editStockItemForm" class="add-item-form">
+<input type="hidden" id="editStockItemId">
+<div class="form-group">
+<label for="editStockItemName">Item Name</label>
+<input type="text" id="editStockItemName" placeholder="Enter item name" required>
+</div>
+<div class="form-group">
+<label for="editStockItemCategory">Category</label>
+<select id="editStockItemCategory" required>
+<option value="">Select category</option>
+<option value="Electronics">Electronics</option>
+<option value="Clothing">Clothing</option>
+<option value="Footwear">Footwear</option>
+<option value="Home & Kitchen">Home & Kitchen</option>
+<option value="Sports">Sports</option>
+<option value="Books">Books</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div class="form-group">
+<label for="editStockItemPrice">Price (₹)</label>
+<input type="number" id="editStockItemPrice" placeholder="0.00" step="0.01" min="0" required>
+</div>
+<div class="form-group">
+<label for="editStockItemQuantity">Quantity</label>
+<input type="number" id="editStockItemQuantity" placeholder="0" min="0" required>
+</div>
+<div class="form-group form-full-width">
+<label for="editStockItemDescription">Description</label>
+<textarea id="editStockItemDescription" rows="3" placeholder="Enter item description"></textarea>
+</div>
+<div class="form-group form-full-width">
+<label>Select Icon</label>
+<div class="icon-selector" id="editStockIconSelector">
+<div class="icon-option" data-icon="fa-laptop"><i class="fas fa-laptop"></i></div>
+<div class="icon-option" data-icon="fa-mobile-alt"><i class="fas fa-mobile-alt"></i></div>
+<div class="icon-option" data-icon="fa-headphones"><i class="fas fa-headphones"></i></div>
+<div class="icon-option" data-icon="fa-tshirt"><i class="fas fa-tshirt"></i></div>
+<div class="icon-option" data-icon="fa-shoe-prints"><i class="fas fa-shoe-prints"></i></div>
+<div class="icon-option" data-icon="fa-clock"><i class="fas fa-clock"></i></div>
+<div class="icon-option" data-icon="fa-camera"><i class="fas fa-camera"></i></div>
+<div class="icon-option" data-icon="fa-gamepad"><i class="fas fa-gamepad"></i></div>
+<div class="icon-option" data-icon="fa-book"><i class="fas fa-book"></i></div>
+<div class="icon-option" data-icon="fa-home"><i class="fas fa-home"></i></div>
+<div class="icon-option" data-icon="fa-utensils"><i class="fas fa-utensils"></i></div>
+<div class="icon-option" data-icon="fa-dumbbell"><i class="fas fa-dumbbell"></i></div>
+<div class="icon-option" data-icon="fa-gift"><i class="fas fa-gift"></i></div>
+<div class="icon-option" data-icon="fa-box"><i class="fas fa-box"></i></div>
+<div class="icon-option" data-icon="fa-heart"><i class="fas fa-heart"></i></div>
+<div class="icon-option" data-icon="fa-star"><i class="fas fa-star"></i></div>
+</div>
+</div>
+<div class="form-actions form-full-width">
+<button type="submit" class="btn">Update Item</button>
+<button type="button" class="btn btn-secondary" onclick="closeModal('editStockItemModal')">Cancel</button>
+</div>
+</form>
+</div>
+</div>
+
+<div id="checkoutModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Checkout</h2>
+<button class="close-btn" onclick="closeModal('checkoutModal')">&times;</button>
+</div>
+
+<div class="schedule-form">
+<h3>Order Summary</h3>
+<div id="checkoutOrderSummary">
+<!-- Order summary will be dynamically loaded here -->
+</div>
+<div class="cart-total">
+<span>Total:</span>
+<span id="checkoutTotal">₹0.00</span>
+</div>
+</div>
+
+<div class="schedule-form">
+<h3>Schedule Pickup</h3>
+<div class="schedule-options">
+<div class="form-group">
+<label for="deliveryDate">Pickup Date</label>
+<input type="date" id="deliveryDate" required>
+</div>
+<div class="form-group">
+<label for="deliveryTime">Pickup Time</label>
+<select id="deliveryTime" required>
+<option value="">Select time</option>
+<option value="09:00">9:00 AM</option>
+<option value="10:00">10:00 AM</option>
+<option value="11:00">11:00 AM</option>
+<option value="12:00">12:00 PM</option>
+<option value="13:00">1:00 PM</option>
+<option value="14:00">2:00 PM</option>
+<option value="15:00">3:00 PM</option>
+<option value="16:00">4:00 PM</option>
+<option value="17:00">5:00 PM</option>
+</select>
+</div>
+</div>
+<div class="form-group">
+<label for="specialInstructions">Special Instructions</label>
+<textarea id="specialInstructions" rows="3" placeholder="Any special pickup instructions..."></textarea>
+</div>
+</div>
+
+<div class="form-actions">
+<button class="btn" onclick="processCheckout()">Place Order</button>
+<button class="btn btn-secondary" onclick="closeModal('checkoutModal')">Cancel</button>
+</div>
+</div>
+</div>
+
+<div id="orderDetailsModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Order Details</h2>
+<button class="close-btn" onclick="closeModal('orderDetailsModal')">&times;</button>
+</div>
+
+<div class="bill-container">
+<div class="bill-header">
+<h2 id="billStoreName">SmartStore</h2>
+<p id="billStoreAddress">123 Main St, City, Country</p>
+<p id="billStorePhone">+1 (555) 123-4567</p>
+</div>
+
+<div id="orderDetailsContent">
+<!-- Order details will be loaded here -->
+</div>
+</div>
+
+<div class="form-actions">
+<button class="btn btn-secondary" onclick="closeModal('orderDetailsModal')">Close</button>
+</div>
+</div>
+</div>
+
+<div id="offlineOrderModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Create Offline Order</h2>
+<button class="close-btn" onclick="closeModal('offlineOrderModal')">&times;</button>
+</div>
+
+<div class="form-group">
+<label for="offlineCustomerName">Customer Name</label>
+<input type="text" id="offlineCustomerName" placeholder="Enter customer name" required>
+</div>
+
+<div class="form-group">
+<label for="offlineCustomerPhone">Customer Phone</label>
+<input type="text" id="offlineCustomerPhone" placeholder="Enter phone number" required>
+</div>
+
+<div class="form-group">
+<label>Select Products</label>
+<div id="offlineOrderProducts">
+<!-- Products will be loaded here -->
+</div>
+</div>
+
+<div class="schedule-form">
+<h3>Order Details</h3>
+<div class="schedule-options">
+<div class="form-group">
+<label for="offlineDeliveryDate">Order Date</label>
+<input type="date" id="offlineDeliveryDate" required>
+</div>
+<div class="form-group">
+<label for="offlineDeliveryTime">Order Time</label>
+<select id="offlineDeliveryTime" required>
+<option value="">Select time</option>
+<option value="09:00">9:00 AM</option>
+<option value="10:00">10:00 AM</option>
+<option value="11:00">11:00 AM</option>
+<option value="12:00">12:00 PM</option>
+<option value="13:00">1:00 PM</option>
+<option value="14:00">2:00 PM</option>
+<option value="15:00">3:00 PM</option>
+<option value="16:00">4:00 PM</option>
+<option value="17:00">5:00 PM</option>
+</select>
+</div>
+</div>
+</div>
+
+<div class="form-group">
+<label for="offlineSpecialInstructions">Special Instructions</label>
+<textarea id="offlineSpecialInstructions" rows="3" placeholder="Any special instructions..."></textarea>
+</div>
+
+<div class="cart-total">
+<span>Total:</span>
+<span id="offlineOrderTotal">₹0.00</span>
+</div>
+
+<div class="form-actions">
+<button class="btn" onclick="createOfflineOrder()">Create Order</button>
+<button class="btn btn-secondary" onclick="closeModal('offlineOrderModal')">Cancel</button>
+</div>
+</div>
+</div>
+
+
+</body>
+<script src="script.js"></script>
+</html>
